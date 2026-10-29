@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* Tokens do Lex. A paleta padrão do Tailwind sai (`--color-*: initial`), como no design system do produto: só existem as cores abaixo. */
+@theme static {
+  --color-*: initial;
+
+  /* Superfícies (verde quase preto, como o produto) */
+  --color-bg: #0b110f;
+  --color-raised: #101a17;
+  --color-sunken: #050908;
+
+  /* Texto. `muted` e `faint` ficam acima de 4,5:1 sobre `bg`. */
+  --color-ink: #f2f4f3;
+  --color-ink-strong: #ffffff;
+  --color-muted: rgb(242 244 243 / 0.64);
+  --color-faint: rgb(242 244 243 / 0.52);
+  --color-on-light: #07110d;
+
+  /* Linhas */
+  --color-line: rgb(242 244 243 / 0.14);
+  --color-line-strong: rgb(242 244 243 / 0.4);
+
+  /* Marca do Lex */
+  --color-accent: #74c7a0;
+  --color-accent-ink: #a7e3c5;
+
+  --font-display: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@layer base {
+  html {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-bg);
+    min-height: 100vh;
+    overflow-x: clip;
+  }
+
+  /* Onde há régua lateral, ela substitui a barra de rolagem: a nativa some e o corpo ganha a faixa da régua. */
+  @media (min-width: 1024px) {
+    html.js {
+      scrollbar-width: none;
+    }
+
+    html.js::-webkit-scrollbar {
+      display: none;
+    }
+
+    body {
+      padding-right: 60px;
+    }
+  }
+
+  /* Linhas de varredura bem sutis, como na referência. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 3px);
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-light);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* Até o GSAP assumir (classe `motion-ready` no <html>), o que vai animar fica escondido, para não piscar na carga.
+     Sem JavaScript a classe `js` não existe, e nada é escondido. */
+  html.js:not(.motion-ready) [data-reveal],
+  html.js:not(.motion-ready) [data-draw-eyebrow],
+  html.js:not(.motion-ready) [data-draw-tick],
+  html.js:not(.motion-ready) [data-ruler-tick],
+  html.js:not(.motion-ready) [data-index-now] [data-letter],
+  html.js:not(.motion-ready) #site-nav > div > * {
+    opacity: 0;
+  }
+
+  html.js:not(.motion-ready) [data-draw-rule] {
+    transform: scaleX(0);
+  }
+}
+
+@layer components {
+  /* Rótulo em mono maiúsculo (o `hud-label` da referência): índices de seção, chips, botões e legendas. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* Títulos em Archivo, peso 620 e tracking apertado, como na referência. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 620;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    color: var(--color-ink-strong);
+    text-wrap: balance;
+  }
+
+  .btn {
+    display: inline-flex;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding-inline: 24px;
+    border: 1px solid transparent;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition:
+      background-color 150ms,
+      border-color 150ms,
+      color 150ms;
+  }
+
+  .btn-solid {
+    background: var(--color-ink-strong);
+    color: var(--color-on-light);
+  }
+
+  .btn-solid:hover {
+    background: var(--color-accent-ink);
+  }
+
+  .btn-line {
+    border-color: var(--color-line-strong);
+    background: var(--color-bg);
+    color: var(--color-ink);
+  }
+
+  .btn-line:hover {
+    border-color: var(--color-ink-strong);
+    background: var(--color-raised);
+  }
+
+  /* Moldura da página: duas linhas verticais. As linhas horizontais e as cruzes são de cada seção (SectionHead). */
+  .frame {
+    position: relative;
+    margin-inline: auto;
+    max-width: 1280px;
+  }
+
+  @media (min-width: 1024px) {
+    .frame {
+      border-inline: 1px solid var(--color-line);
+    }
+  }
+
+  .cross {
+    width: 11px;
+    height: 11px;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--color-line-strong), var(--color-line-strong)) center / 100% 1px no-repeat,
+      linear-gradient(var(--color-line-strong), var(--color-line-strong)) center / 1px 100% no-repeat;
+  }
+
+  /* Visualização ampliada de um módulo. */
+  dialog.lightbox {
+    margin: auto;
+    width: min(1180px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    padding: 0;
+    overflow: auto;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-bg);
+    color: var(--color-ink);
+  }
+
+  dialog.lightbox::backdrop {
+    background: rgb(2 6 5 / 0.82);
+    backdrop-filter: blur(6px);
+  }
+}
