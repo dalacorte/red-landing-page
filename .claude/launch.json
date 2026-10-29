@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "lex-landing",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "--host", "127.0.0.1", "--port", "5180", "--strictPort"],
+      "port": 5180
+    },
+    {
+      "name": "lex-mock-api",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["tools/screenshots/mock-api.mjs"],
+      "port": 5999
+    },
+    {
+      "name": "lex-app",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["tools/screenshots/run-red-frontend.mjs"],
+      "port": 5174
+    }
+  ]
+}
